@@ -18,6 +18,7 @@
 
 ### 使用方法
 ```angular2html
+0. yum install MySQL-python -y
 1. git clone https://github.com/ouhaohan8023/tcp_icmp_check.git
 2. cd tcp_icmp_check 
 3. sed 's/\r//' install.sh > ainstall.sh
