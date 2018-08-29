@@ -10,6 +10,7 @@ sh_ver="2.0.38"
 filepath=$(cd "$(dirname "$0")"; pwd)
 file=$(echo -e "${filepath}"|awk -F "$0" '{print $1}')
 config_user_file="${file}/usermysql.json"
+run_file="${file}/p.py"
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
@@ -93,10 +94,15 @@ Write_configuration(){
 }
 EOF
 }
-echo "${file}"
+#  写入定时任务
+Write_crontab(){
+    echo "* * * * *  /usr/bin/python2.7 ${run_file}" >> /var/spool/cron/root
+}
+#echo "${file}"
 Set_host
 Set_user
 Set_pwd
 Set_database
 Set_config_port
 Write_configuration
+Write_crontab
