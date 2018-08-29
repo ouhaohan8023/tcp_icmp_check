@@ -1,19 +1,9 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : 新新新加坡后台（低级权限）
- Source Server Type    : MySQL
- Source Server Version : 80011
- Source Host           : 173.82.95.67:3306
- Source Schema         : shadow3
-
- Target Server Type    : MySQL
- Target Server Version : 80011
- File Encoding         : 65001
-
- Date: 29/08/2018 16:44:30
-*/
-
+/**
+监测 TCP ICMP 阻断功能对应表
+节点id对应ssrpanel 中的ss_node表id
+ssrpanel项目地址
+https://github.com/ouhaohan8023/shadow.com
+ */
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 

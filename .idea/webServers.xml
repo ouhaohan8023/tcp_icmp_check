@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1645de95-b6af-4b3c-ab17-fce7b7bbfdd0" name="117.50.15.231" url="http://117.50.15.231">
+        <fileTransfer host="117.50.15.231" port="22" rootFolder="/root/pyth" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

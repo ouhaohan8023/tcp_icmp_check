@@ -16,8 +16,28 @@
 
 ```
 
+### 使用方法
+```angular2html
+1. git clone https://github.com/ouhaohan8023/tcp_icmp_check.git
+2. cd tcp_icmp_check 
+3. sed 's/\r//' install.sh > ainstall.sh
+4. sh ainstall.sh
+5. 输入后台数据库配置信息
+6. python p.py
+
+```
+
 ## 附
 ### 将dos环境下编写的shell脚本转化为linux环境下可运行的脚本
 ```angular2html
+// 出现报错
+install.sh: line 50: $'\r': command not found
+install.sh: line 51: $'\r': command not found
+install.sh: line 52: $'\r': command not found
+install.sh: line 54: syntax error near unexpected token `$'{\r''
+'nstall.sh: line 54: `Set_host(){
+```
+```
+//解决方法
 sed 's/\r//' install.sh > ainstall.sh
 ```
