@@ -36,7 +36,7 @@ def check_alive(ip, count=1, timeout=1):
         return 0
 # check_alive('8.8.8.8')
 
-def add(t_tcp_status,icmp_status,name,ip):
+def add(t_tcp_status,icmp_status,name,ip,cursor,db):
     '''
    新增节点数据
     '''
@@ -58,7 +58,7 @@ def add(t_tcp_status,icmp_status,name,ip):
         db.rollback()
         print "\033[31m 数据库更新异常addSql \033[0m"
 
-def update(t_tcp_status,icmp_status,name,ip):
+def update(t_tcp_status,icmp_status,name,ip,cursor,db):
     '''
     更新节点信息
     :param t_tcp_status:
@@ -101,8 +101,8 @@ try:
     # 获取所有记录列表
     results = cursor.fetchall()
     db.close()
+    db2 = MySQLdb.connect(d['host'], d['user'], d['password'], d['db'], charset='utf8')
     for row in results:
-       db2 = MySQLdb.connect(d['host'], d['user'], d['password'], d['db'], charset='utf8')
        cursor2 = db2.cursor()
 
        ip = row[1]
@@ -119,21 +119,24 @@ try:
        print status
 
        sql2 = "SELECT * FROM ss_node_tcp_icmp WHERE t_s_id = %d" %(row[0])
-       print sql2
        cursor2.execute(sql2)
        exist = cursor2.fetchone()
+       print exist
        if exist == None :
          if status == 0:
-             add(1,icmp,row[2],row[1])
+             add(1,icmp,row[2],row[1],cursor2,db2)
          else:
-             add(0,icmp,row[2],row[1])
+             add(0,icmp,row[2],row[1],cursor2,db2)
        else:
          if status == 0:
-             update(1,icmp,row[2],row[1])
+             update(1,icmp,row[2],row[1],cursor2,db2)
          else:
-             update(0,icmp,row[2],row[1])
-       db2.close()
+             update(0,icmp,row[2],row[1],cursor2,db2)
+    db2.close()
 except:
     print "数据库链接失败"
 
+
+# 关闭数据库连接
+# db.close()
 
