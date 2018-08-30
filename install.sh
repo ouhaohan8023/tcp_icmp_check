@@ -11,6 +11,7 @@ filepath=$(cd "$(dirname "$0")"; pwd)
 file=$(echo -e "${filepath}"|awk -F "$0" '{print $1}')
 config_user_file="${file}/usermysql.json"
 run_file="${file}/p.py"
+log_file="${file}/p.log"
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
@@ -96,7 +97,7 @@ EOF
 }
 #  写入定时任务
 Write_crontab(){
-    echo "* * * * *  /usr/bin/python2.7 ${run_file}" >> /var/spool/cron/root
+    echo "*/3 * * * * /usr/bin/python ${run_file} >> ${log_file} 2>&1 " >> /var/spool/cron/root
 }
 #echo "${file}"
 Set_host

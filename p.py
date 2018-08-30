@@ -11,6 +11,7 @@ from io import open
 import time
 import re
 import subprocess
+import os
 
 def check_alive(ip, count=1, timeout=1):
     '''
@@ -82,7 +83,8 @@ def update(t_tcp_status,icmp_status,name,ip):
         db.rollback()
         print "\033[31m 数据库更新异常updateSql\033[0m"
 
-with open('./usermysql.json', encoding='utf-8') as f:
+file_path = os.getcwd()
+with open('/root/pyth/usermysql.json', encoding='utf-8') as f:
     line = f.read()
     d = json.loads(line)
     f.close()
@@ -98,21 +100,28 @@ try:
     cursor.execute(sql)
     # 获取所有记录列表
     results = cursor.fetchall()
+    db.close()
     for row in results:
+       db2 = MySQLdb.connect(d['host'], d['user'], d['password'], d['db'], charset='utf8')
+       cursor2 = db2.cursor()
+
        ip = row[1]
        icmp = check_alive(ip)
        # 打印结果
        print "ip:"+ip
+
        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         # 创建 socket 对象
        host = ip
        port = 10001              # 设置端口号
-
+       s.settimeout(10)
        status = s.connect_ex((host, port))
        s.close()
+       print status
 
        sql2 = "SELECT * FROM ss_node_tcp_icmp WHERE t_s_id = %d" %(row[0])
-       cursor.execute(sql2)
-       exist = cursor.fetchone()
+       print sql2
+       cursor2.execute(sql2)
+       exist = cursor2.fetchone()
        if exist == None :
          if status == 0:
              add(1,icmp,row[2],row[1])
@@ -123,9 +132,8 @@ try:
              update(1,icmp,row[2],row[1])
          else:
              update(0,icmp,row[2],row[1])
+       db2.close()
 except:
     print "数据库链接失败"
 
-# 关闭数据库连接
-db.close()
 
