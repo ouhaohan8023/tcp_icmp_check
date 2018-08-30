@@ -36,7 +36,7 @@ def check_alive(ip, count=1, timeout=1):
         return 0
 # check_alive('8.8.8.8')
 
-def add(t_tcp_status,icmp_status,name,ip,cursor,db):
+def add(t_tcp_status,icmp_status,name,ip,cc,dd):
     '''
    新增节点数据
     '''
@@ -45,46 +45,48 @@ def add(t_tcp_status,icmp_status,name,ip,cursor,db):
     if t_tcp_status == 1:
         addSql = "INSERT INTO ss_node_tcp_icmp(t_s_id,t_icmp_status,t_tcp_status,created_at,updated_at) VALUES (%d,%d,%d,%d,%d)" % (
             row[0], icmp_status, t_tcp_status, created_at, updated_at)
-        print "\033[32m%s %s ok\033[0m" % (ip,name)
     else:
         end_at = time.time()
         addSql = "INSERT INTO ss_node_tcp_icmp(t_s_id,t_icmp_status,t_tcp_status,created_at,updated_at,end_at) VALUES (%d,%d,%d,%d,%d,%d)" % (
             row[0], icmp_status, t_tcp_status, created_at, updated_at, end_at)
-        print "\033[31m%s %s error\033[0m" % (ip,name)
     try:
-        cursor.execute(addSql)
-        db.commit()
+        cc.execute(addSql)
+        dd.commit()
     except:
-        db.rollback()
+        dd.rollback()
         print "\033[31m 数据库更新异常addSql \033[0m"
+    return
 
-def update(t_tcp_status,icmp_status,name,ip,cursor,db):
+def update(t_tcp_status,icmp_status,name,ip,cc,dd):
     '''
     更新节点信息
     :param t_tcp_status:
     :return:
     '''
+    # print t_tcp_status
     if t_tcp_status == 1:
         updated_at = time.time()
         updateSql = "UPDATE ss_node_tcp_icmp SET t_icmp_status = %d,t_tcp_status = %d,updated_at = %d WHERE (t_s_id = %d)" % (
             icmp_status, t_tcp_status, updated_at, row[0])
-
-        print "\033[32m%s %s ok\033[0m" % (ip,name)
     else:
         updated_at = time.time()
         end_at = time.time()
         updateSql = "UPDATE ss_node_tcp_icmp SET t_icmp_status = %d,t_tcp_status = %d,updated_at = %d,end_at = %d WHERE (t_s_id = %d)" % (
             icmp_status, t_tcp_status, updated_at,end_at, row[0])
-        print "\033[31m%s %s error\033[0m" % (ip,name)
     try:
-        cursor.execute(updateSql)
-        db.commit()
+        cc.execute(updateSql)
+        dd.commit()
     except:
-        db.rollback()
-        print "\033[31m 数据库更新异常updateSql\033[0m"
+        dd.rollback()
+        print "数据库更新异常updateSql"
+    return
 
-file_path = os.getcwd()
-with open('/root/pyth/usermysql.json', encoding='utf-8') as f:
+# file_path = os.getcwd()
+# mysql配置
+mysql_file = '/root/pyth/usermysql.json'
+# 日志地址
+log_file = '/root/pyth/p.log'
+with open(mysql_file, encoding='utf-8') as f:
     line = f.read()
     d = json.loads(line)
     f.close()
@@ -107,8 +109,6 @@ try:
 
        ip = row[1]
        icmp = check_alive(ip)
-       # 打印结果
-       print "ip:"+ip
 
        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         # 创建 socket 对象
        host = ip
@@ -116,27 +116,26 @@ try:
        s.settimeout(10)
        status = s.connect_ex((host, port))
        s.close()
-       print status
-
+       # print status
        sql2 = "SELECT * FROM ss_node_tcp_icmp WHERE t_s_id = %d" %(row[0])
        cursor2.execute(sql2)
        exist = cursor2.fetchone()
-       print exist
        if exist == None :
          if status == 0:
+             # 打印结果
+             print "\033[32mSuccess: \033[0m" + ip
              add(1,icmp,row[2],row[1],cursor2,db2)
          else:
+             print "\033[31mError: \033[0m" + ip
              add(0,icmp,row[2],row[1],cursor2,db2)
        else:
          if status == 0:
+             # 打印结果
+             print "\033[32mSuccess: \033[0m" + ip
              update(1,icmp,row[2],row[1],cursor2,db2)
          else:
+             print "\033[31mError: \033[0m" + ip
              update(0,icmp,row[2],row[1],cursor2,db2)
     db2.close()
 except:
     print "数据库链接失败"
-
-
-# 关闭数据库连接
-# db.close()
-
